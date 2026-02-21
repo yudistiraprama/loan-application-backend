@@ -2,11 +2,9 @@
 
 ## 📌 Overview
 
-This project is a backend system for a digital loan application built
-using **Java 17** and **Spring Boot**.\
-It supports user registration, authentication, loan application
-processing, installment generation, dashboard monitoring, and
-notification services.
+Proyek ini merupakan sistem backend untuk aplikasi pinjaman digital yang dibangun menggunakan Java 17 dan Spring Boot.
+Sistem ini mendukung fitur pendaftaran dan autentikasi pengguna, pemrosesan pengajuan pinjaman, pembuatan jadwal cicilan, 
+pemantauan dashboard, serta layanan notifikasi.
 
 ------------------------------------------------------------------------
 
@@ -51,10 +49,10 @@ Controller → Service → Repository → Database
 -   phone
 -   password
 -   role (USER / ADMIN)
+-   ktp_number
 -   ktp_image_url
 -   selfie_image_url
 -   created_at
--   updated_at
 
 ### 2️⃣ Loans
 
@@ -68,7 +66,6 @@ Controller → Service → Repository → Database
 -   status (PENDING / APPROVED / REJECTED / PAID)
 -   rejection_reason
 -   created_at
--   updated_at
 
 ### 3️⃣ LoanPayments
 
@@ -185,22 +182,11 @@ Application runs at: http://localhost:8080
 
 ## 🧠 Design Decisions
 
--   JWT chosen for scalability and stateless architecture
--   Transactional used to ensure data consistency
--   Async email to improve performance
--   Layered architecture for maintainability
--   DTO separation to prevent entity exposure
-
-------------------------------------------------------------------------
-
-## 📈 Future Improvements
-
--   Payment gateway integration
--   Real SMS provider integration
--   Credit scoring engine
--   Redis caching
--   Docker containerization
--   CI/CD pipeline
+-   Menggunakan JWT untuk mendukung skalabilitas dan arsitektur stateless. 
+-   Menggunakan @Transactional untuk memastikan konsistensi data. 
+-   Mengimplementasikan pengiriman email secara asynchronous untuk meningkatkan performa aplikasi. 
+    Menerapkan arsitektur berlapis (layered architecture) untuk meningkatkan kemudahan pemeliharaan dan pengembangan. 
+-   Memisahkan DTO (Data Transfer Object) dari entity untuk mencegah eksposur langsung struktur database.
 
 ------------------------------------------------------------------------
 
