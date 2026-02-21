@@ -26,30 +26,10 @@ public class AdminController {
     }
 
     @PutMapping("/reject/{id}")
-    public ApiResponse<Loan> reject(@PathVariable Long id) {
-        Loan loan = loanService.rejectLoan(id);
-        return new ApiResponse<>(true, "Loan rejected", loan);
-    }
-
-    @PutMapping("/reject/{id}")
-    public ApiResponse<Loan> reject(
-            @PathVariable Long id,
-            @RequestBody RejectLoanRequest request
-    ) {
+    public ApiResponse<Loan> reject(@PathVariable Long id, @RequestBody RejectLoanRequest request) {
         Loan loan = loanService.rejectLoan(id, request.reason());
 
         return new ApiResponse<>(true, "Loan rejected", loan);
     }
 
-    @PostMapping("/create")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<String> createAdmin(
-            @Valid @RequestBody CreateAdminRequest request
-    ) {
-        return new ApiResponse<>(
-                true,
-                authService.createAdmin(request),
-                null
-        );
-    }
 }

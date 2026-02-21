@@ -17,22 +17,12 @@ public class UserController {
     }
 
     @PostMapping("/upload-ktp")
-    public ApiResponse<String> uploadKtp(
-            @RequestParam("file") MultipartFile file,
-            Authentication auth
-    ) {
-        return new ApiResponse<>(true,
-                userService.uploadKtp(auth, file),
-                null);
+    public ApiResponse<String> uploadKtp(@RequestParam("file") MultipartFile file, Authentication auth) {
+        return new ApiResponse<>(true, userService.uploadKtp(auth, file), null);
     }
 
     @PostMapping("/upload-selfie")
-    public ApiResponse<String> uploadSelfie(
-            @RequestParam("file") MultipartFile file,
-            Authentication auth
-    ) {
-        return new ApiResponse<>(true,
-                userService.uploadSelfie(auth, file),
-                null);
+    public ApiResponse<String> uploadSelfie(@RequestParam("file") MultipartFile file, Authentication auth) {
+        return new ApiResponse<>(true, userService.uploadSelfie(auth, file), null);
     }
 }

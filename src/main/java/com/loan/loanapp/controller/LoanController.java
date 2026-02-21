@@ -19,13 +19,9 @@ public class LoanController {
     private final LoanService loanService;
 
     @PostMapping
-    public ApiResponse<Loan> applyLoan(@RequestBody LoanRequest request,
-                                       Authentication authentication) {
-
+    public ApiResponse<Loan> applyLoan(@RequestBody LoanRequest request, Authentication authentication) {
         String email = authentication.getName();
-
         Loan loan = loanService.applyLoan(email, request);
-
         return new ApiResponse<>(true, "Loan submitted", loan);
     }
 
@@ -37,17 +33,13 @@ public class LoanController {
 
     @PutMapping("/approve/{id}")
     public ApiResponse<Loan> approve(@PathVariable Long id) {
-
         Loan loan = loanService.approveLoan(id);
-
         return new ApiResponse<>(true, "Loan approved", loan);
     }
 
     @PutMapping("/reject/{id}")
     public ApiResponse<Loan> reject(@PathVariable Long id) {
-
         Loan loan = loanService.rejectLoan(id);
-
         return new ApiResponse<>(true, "Loan rejected", loan);
     }
 

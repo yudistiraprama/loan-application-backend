@@ -18,10 +18,7 @@ public class DashboardController {
 
     @GetMapping
     public ApiResponse<DashboardResponse> getDashboard(Authentication auth) {
-
-        DashboardResponse response =
-                loanService.getDashboard(auth.getName());
-
+        DashboardResponse response = loanService.getDashboard(auth.getName());
         return new ApiResponse<>(true, "Dashboard data", response);
     }
 }

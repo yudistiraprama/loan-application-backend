@@ -13,8 +13,5 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     Boolean existsByUserIdAndStatusIn(Long userId, List<LoanStatus> statuses);
 
-    Loan findFirstByUserIdAndStatusInOrderByCreatedAtDesc(
-            Long userId,
-            List<LoanStatus> statuses
-    );
+    Loan findFirstByUserIdAndStatusInOrderByCreatedAtDesc(Long userId, List<LoanStatus> statuses);
 }

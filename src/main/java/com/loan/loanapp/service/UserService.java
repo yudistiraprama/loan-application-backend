@@ -12,16 +12,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
 
-    public UserService(UserRepository userRepository,
-                       FileStorageService fileStorageService) {
+    public UserService(UserRepository userRepository, FileStorageService fileStorageService) {
         this.userRepository = userRepository;
         this.fileStorageService = fileStorageService;
     }
 
     public String uploadKtp(Authentication auth, MultipartFile file) {
 
-        User user = userRepository.findByEmail(auth.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new RuntimeException("User not found"));
 
         String path = fileStorageService.saveFile(file, "ktp");
 
@@ -33,8 +31,7 @@ public class UserService {
 
     public String uploadSelfie(Authentication auth, MultipartFile file) {
 
-        User user = userRepository.findByEmail(auth.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new RuntimeException("User not found"));
 
         String path = fileStorageService.saveFile(file, "selfie");
 

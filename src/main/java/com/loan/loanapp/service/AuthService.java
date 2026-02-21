@@ -31,7 +31,8 @@ public class AuthService {
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .ktpImageUrl(request.getKtpNumber())
+                .ktpNumber(request.getKtpNumber())
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
@@ -41,8 +42,7 @@ public class AuthService {
 
     public Map<String, String> login(LoginRequest request) {
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
@@ -55,25 +55,5 @@ public class AuthService {
                 "accessToken", accessToken,
                 "refreshToken", refreshToken
         );
-    }
-
-    @Transactional
-    public String createAdmin(CreateAdminRequest request) {
-
-        if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email already registered");
-        }
-
-        User admin = User.builder()
-                .fullName(request.fullName())
-                .email(request.email())
-                .phone(request.phone())
-                .password(passwordEncoder.encode(request.password()))
-                .role(Role.ADMIN)
-                .build();
-
-        userRepository.save(admin);
-
-        return "Admin created successfully";
     }
 }

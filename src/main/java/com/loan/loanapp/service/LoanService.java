@@ -30,8 +30,7 @@ public class LoanService {
 
     public Loan applyLoan(String email, LoanRequest request) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
         if (request.getAmount().compareTo(BigDecimal.valueOf(12000000)) > 0) {
             throw new RuntimeException("Maximum loan is 12,000,000");
@@ -52,15 +51,13 @@ public class LoanService {
 
         BigDecimal interestRate = BigDecimal.valueOf(0.02);
 
-        BigDecimal interest =
-                request.getAmount()
-                        .multiply(interestRate)
-                        .multiply(BigDecimal.valueOf(request.getTenorMonth()));
+        BigDecimal interest = request.getAmount()
+                .multiply(interestRate)
+                .multiply(BigDecimal.valueOf(request.getTenorMonth()));
 
         BigDecimal total = request.getAmount().add(interest);
 
-        BigDecimal monthlyInstallment =
-                total.divide(BigDecimal.valueOf(request.getTenorMonth()), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal monthlyInstallment = total.divide(BigDecimal.valueOf(request.getTenorMonth()), 2, BigDecimal.ROUND_HALF_UP);
 
         Loan loan = Loan.builder()
                 .user(user)
@@ -77,16 +74,14 @@ public class LoanService {
 
     public List<Loan> getMyLoans(String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
         return loanRepository.findByUserId(user.getId());
     }
 
     public Loan rejectLoan(Long loanId) {
 
-        Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new RuntimeException("Loan not found"));
+        Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Loan not found"));
 
         loan.setStatus(LoanStatus.REJECTED);
 
@@ -96,13 +91,11 @@ public class LoanService {
     @Transactional
     public Loan approveLoan(Long loanId) {
 
-        Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new RuntimeException("Loan not found"));
+        Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Loan not found"));
 
         loan.setStatus(LoanStatus.APPROVED);
         loanRepository.save(loan);
 
-        // Generate installment schedule
         for (int i = 1; i <= loan.getTenorMonth(); i++) {
 
             LoanPayment payment = LoanPayment.builder()
@@ -115,13 +108,11 @@ public class LoanService {
             loanPaymentRepository.save(payment);
         }
 
-        // ✅ EMAIL NOTIFICATION
         emailService.sendLoanApprovedEmail(
                 loan.getUser().getEmail(),
                 loan.getAmount().toString()
         );
 
-        // ✅ SMS NOTIFICATION (MOCK)
         smsService.sendSms(
                 loan.getUser().getPhone(),
                 "Your loan of " + loan.getAmount() + " has been approved."
@@ -132,14 +123,12 @@ public class LoanService {
 
     public DashboardResponse getDashboard(String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
-        Loan loan = loanRepository
-                .findFirstByUserIdAndStatusInOrderByCreatedAtDesc(
-                        user.getId(),
-                        List.of(LoanStatus.PENDING, LoanStatus.APPROVED, LoanStatus.REJECTED)
-                );
+        Loan loan = loanRepository.findFirstByUserIdAndStatusInOrderByCreatedAtDesc(
+                user.getId(),
+                List.of(LoanStatus.PENDING, LoanStatus.APPROVED, LoanStatus.REJECTED)
+        );
 
         if (loan == null) {
             return new DashboardResponse(
@@ -158,25 +147,20 @@ public class LoanService {
             );
         }
 
-        Long unpaidCount = loanPaymentRepository
-                .countByLoanIdAndStatus(loan.getId(), "UNPAID");
+        Long unpaidCount = loanPaymentRepository.countByLoanIdAndStatus(loan.getId(), "UNPAID");
 
-        Long paidCount = loanPaymentRepository
-                .countByLoanIdAndStatus(loan.getId(), "PAID");
+        Long paidCount = loanPaymentRepository.countByLoanIdAndStatus(loan.getId(), "PAID");
 
-        BigDecimal totalPaidAmount =
-                loanPaymentRepository.sumPaidAmount(loan.getId());
+        BigDecimal totalPaidAmount = loanPaymentRepository.sumPaidAmount(loan.getId());
 
-        LoanPayment nextPayment = loanPaymentRepository
-                .findFirstByLoanIdAndStatusOrderByDueDateAsc(
+        LoanPayment nextPayment = loanPaymentRepository.findFirstByLoanIdAndStatusOrderByDueDateAsc(
                         loan.getId(),
                         "UNPAID"
                 );
 
         Double progressPercentage = 0.0;
         if (loan.getTenorMonth() != null && loan.getTenorMonth() > 0) {
-            progressPercentage =
-                    (paidCount.doubleValue() / loan.getTenorMonth()) * 100;
+            progressPercentage = (paidCount.doubleValue() / loan.getTenorMonth()) * 100;
         }
 
         Boolean overdue = false;
@@ -185,8 +169,7 @@ public class LoanService {
 
         if (nextPayment != null) {
             nextInstallmentAmount = nextPayment.getAmount();
-            daysUntilDue =
-                    java.time.temporal.ChronoUnit.DAYS.between(
+            daysUntilDue = java.time.temporal.ChronoUnit.DAYS.between(
                             LocalDate.now(),
                             nextPayment.getDueDate()
                     );
@@ -213,8 +196,7 @@ public class LoanService {
     @Transactional
     public Loan rejectLoan(Long loanId, String reason) {
 
-        Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new RuntimeException("Loan not found"));
+        Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Loan not found"));
 
         if (loan.getStatus() == LoanStatus.APPROVED) {
             throw new RuntimeException("Approved loan cannot be rejected");
@@ -225,7 +207,6 @@ public class LoanService {
 
         loanRepository.save(loan);
 
-        // Optional: kirim email & SMS
         emailService.sendLoanApprovedEmail(
                 loan.getUser().getEmail(),
                 "Your loan was rejected. Reason: " + reason
